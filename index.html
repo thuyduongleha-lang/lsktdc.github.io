@@ -494,6 +494,9 @@
           <button id="btn-shuffle-layout" type="button" class="px-2.5 py-1.5 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-emerald-50 text-xs font-semibold transition" title="Đổi kiểu bố cục trang trí cho các chương đang mở">
             🎲 Đổi kiểu bố cục
           </button>
+          <button id="btn-edit-chapter-bar" type="button" class="px-2.5 py-1.5 rounded-lg bg-sky-800/80 hover:bg-sky-700 text-sky-50 text-xs font-semibold transition" title="Sửa nhanh nội dung & đối chiếu số slide của chương đang xem">
+            ✏️ Sửa nội dung trang
+          </button>
           <button id="btn-view-mode" type="button" class="px-2.5 py-1.5 rounded-lg bg-[#3c3029] hover:bg-[#4d3d34] text-amber-100 text-xs font-medium transition">
             📄 Xem 1 trang / 2 trang
           </button>
@@ -706,9 +709,12 @@
         <div>
           <label class="block text-amber-200/85 font-medium mb-1">Chọn phiên bản Gemini</label>
           <select id="sel-api-model" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-2 text-amber-50">
-            <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng — Nhanh &amp; tóm tắt hay)</option>
-            <option value="gemini-2.0-flash">gemini-2.0-flash (Bản dự phòng miễn phí)</option>
+            <option value="gemini-3.6-flash">gemini-3.6-flash (Mới nhất — Nhanh &amp; tóm tắt hay)</option>
+            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Nhẹ, hạn mức cao)</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
           </select>
+          <p class="text-[11px] text-amber-200/60 mt-1">Bấm <strong>Kiểm tra kết nối</strong> để web tự dò đúng danh sách model đang hoạt động với key của bạn (tránh lỗi 404).</p>
         </div>
         <div id="api-test-result" class="hidden text-xs px-3 py-2 rounded-lg"></div>
       </div>
@@ -767,6 +773,124 @@
     </div>
   </div>
 
+
+  <!-- ==================== MODAL: ĐỔI ẢNH MINH HỌA (WIKIMEDIA / ẢNH TỪ SLIDE) ==================== -->
+  <div id="modal-photo" class="no-print fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#28201b] border border-amber-700/60 rounded-2xl max-w-2xl w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-base font-bold text-amber-100">🔄 Đổi ảnh minh họa &amp; kiểm tra đúng công trình</h3>
+        <button id="btn-close-photo" type="button" class="text-amber-200/70 hover:text-white text-lg leading-none">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Tên công trình hiển thị trên Booklet</label>
+            <input id="photo-edit-title" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-2 text-amber-50 focus:outline-none focus:border-amber-500" />
+          </div>
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Tải ảnh chụp trực tiếp từ slide của cô</label>
+            <label for="photo-local-upload" class="flex items-center justify-center gap-2 w-full bg-emerald-800/80 hover:bg-emerald-700 text-emerald-50 font-semibold rounded-lg px-3 py-2 cursor-pointer transition">
+              📤 Chọn ảnh từ máy (JPG/PNG)
+              <input id="photo-local-upload" type="file" accept="image/*" class="hidden" />
+            </label>
+          </div>
+        </div>
+
+        <div class="border-t border-amber-900/40 pt-3">
+          <label class="block text-amber-200/80 mb-1 font-medium">Hoặc tìm lại 6 ảnh khác trên Wikimedia Commons (gõ tên tiếng Anh chính xác)</label>
+          <div class="flex gap-2">
+            <input id="photo-search-query" type="text" placeholder="VD: Great Ziggurat of Ur" class="flex-1 bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-2 text-amber-50 focus:outline-none focus:border-amber-500" />
+            <button id="btn-search-wiki" type="button" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shrink-0">
+              🔍 Tìm ảnh
+            </button>
+          </div>
+        </div>
+
+        <div id="photo-search-status" class="text-xs text-amber-200/75"></div>
+        <div id="photo-search-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <!-- 6 ảnh gợi ý -->
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="btn-cancel-photo" type="button" class="px-3 py-1.5 rounded-lg bg-[#3a2e27] text-amber-100 text-xs font-semibold">Đóng</button>
+        <button id="btn-save-photo-title" type="button" class="px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold">Lưu tên công trình</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: SỬA NHANH NỘI DUNG CHƯƠNG ==================== -->
+  <div id="modal-edit-ch" class="no-print fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#28201b] border border-amber-700/60 rounded-2xl max-w-2xl w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h3 id="edit-ch-heading" class="text-base font-bold text-amber-100">✏️ Sửa nhanh nội dung chương</h3>
+        <button id="btn-close-edit-ch" type="button" class="text-amber-200/70 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p class="text-[11px] text-amber-200/70 mb-3">
+        Mẹo định dạng: bọc từ cần tô highlight bằng <code class="bg-black/40 px-1 rounded">==từ khóa==</code> và từ cần gạch chân bằng <code class="bg-black/40 px-1 rounded">__từ khóa__</code>.
+      </p>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div class="sm:col-span-2">
+            <label class="block text-amber-200/80 mb-1 font-medium">Tiêu đề chương (Tiếng Anh)</label>
+            <input id="ech-title" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-1.5 text-amber-50" />
+          </div>
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Niên đại (Era)</label>
+            <input id="ech-era" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-1.5 text-amber-50" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Nguồn trang slide gốc (để đối chiếu)</label>
+            <input id="ech-slides" type="text" placeholder="VD: Slides 2, 5, 8" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-1.5 text-amber-50" />
+          </div>
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Ghi chú mũi tên (Callout Note)</label>
+            <input id="ech-callout" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-1.5 text-amber-50" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-amber-200/80 mb-1 font-medium">3 ý tóm tắt chính (mỗi dòng 1 ý)</label>
+          <textarea id="ech-bullets" rows="4" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-2 text-amber-50"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Materials (Vật liệu)</label>
+            <input id="ech-mat" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-2.5 py-1.5 text-amber-50" />
+          </div>
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Structure (Kết cấu)</label>
+            <input id="ech-str" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-2.5 py-1.5 text-amber-50" />
+          </div>
+          <div>
+            <label class="block text-amber-200/80 mb-1 font-medium">Settlement (Đô thị)</label>
+            <input id="ech-urb" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-2.5 py-1.5 text-amber-50" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-amber-200/80 mb-1 font-medium">Key Takeaway (Ý chốt đáy trang)</label>
+          <input id="ech-takeaway" type="text" class="w-full bg-[#1b1512] border border-amber-900/60 rounded-lg px-3 py-1.5 text-amber-50" />
+        </div>
+
+        <div id="ech-photos-box" class="border-t border-amber-900/40 pt-3 space-y-2">
+          <!-- Cấu hình kiểu tương tác & chữ ẩn cho từng ảnh -->
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="btn-cancel-edit-ch" type="button" class="px-3 py-1.5 rounded-lg bg-[#3a2e27] text-amber-100 text-xs font-semibold">Hủy</button>
+        <button id="btn-save-edit-ch" type="button" class="px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold">💾 Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     if (window.pdfjsLib) {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -789,6 +913,7 @@
         layoutVariant: 0,
         title: 'MESOPOTAMIA & EARLY SETTLEMENTS',
         era: 'c. 3500 – 539 BCE',
+        sourceSlides: 'Slides 2, 5, 9',
         accentWashi: 'washi-terracotta',
         sketchType: 'ziggurat',
         sketchCaption: 'Stepped Massing & Plan',
@@ -834,6 +959,7 @@
         layoutVariant: 1,
         title: 'ANCIENT EGYPT & SACRED AXES',
         era: 'c. 3000 – 332 BCE',
+        sourceSlides: 'Slides 3, 7, 11',
         accentWashi: 'washi-ochre',
         sketchType: 'column',
         sketchCaption: 'Hypostyle Plan & Elevation',
@@ -879,6 +1005,7 @@
         layoutVariant: 2,
         title: 'CLASSICAL GREEK POLIS & TEMPLES',
         era: 'c. 800 – 146 BCE',
+        sourceSlides: 'Slides 4, 8, 14',
         accentWashi: 'washi-blue',
         sketchType: 'pediment',
         sketchCaption: 'Peripteral Plan & Facade',
@@ -925,6 +1052,7 @@
         layoutVariant: 3,
         title: 'ROMAN ENGINEERING & URBAN GRIDS',
         era: 'c. 509 BCE – 476 CE',
+        sourceSlides: 'Slides 2, 6, 10',
         accentWashi: 'washi-sage',
         sketchType: 'arch',
         sketchCaption: 'Arch Keystone & Castrum Grid',
@@ -986,7 +1114,7 @@
       queuedFiles: [],
       openCrafts: {},
       apiKey: '',
-      apiModel: 'gemini-2.5-flash'
+      apiModel: 'gemini-3.6-flash'
     };
 
     try {
@@ -1308,22 +1436,26 @@
       `;
     }
 
-    function renderPhotoBlock(photo) {
+    function renderPhotoBlock(photo, chapterId) {
       const isOpen = !!state.openCrafts[photo.id];
       const mmTag = state.showMmGuide
         ? `<div class="absolute bottom-1 left-1 z-30 bg-[#231912]/90 text-amber-200 text-[9px] font-mono px-1.5 py-0.5 rounded shadow">${photo.wMm}×${photo.hMm} mm</div>`
         : '';
+      const swapBtn = `<button type="button" data-swap-ch="${escapeHtml(chapterId || '')}" data-swap-photo="${escapeHtml(photo.id)}" class="btn-swap-photo text-[9px] font-bold px-1.5 py-0.5 rounded bg-sky-900/90 text-sky-100 hover:bg-sky-800" title="Đổi sang ảnh Wikimedia khác hoặc tải ảnh từ slide của cô">🔄 Đổi ảnh</button>`;
 
       if (photo.craftType === 'lift-flap') {
         return `
           <div class="relative">
-            <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center justify-between gap-1 mb-1">
               <span class="craft-badge inline-flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-800 text-emerald-50 shadow-sm">
                 👆 ${isOpen ? 'Đóng lại' : 'Lật mở'}
               </span>
-              <button type="button" data-diy-type="lift-flap" data-diy-w="${photo.wMm}" data-diy-h="${photo.hMm}" data-diy-title="${escapeHtml(photo.title)}" class="btn-diy text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#231912]/90 text-amber-200 hover:bg-[#231912]">
-                ✂️ Cách làm
-              </button>
+              <div class="flex items-center gap-1">
+                ${swapBtn}
+                <button type="button" data-diy-type="lift-flap" data-diy-w="${photo.wMm}" data-diy-h="${photo.hMm}" data-diy-title="${escapeHtml(photo.title)}" class="btn-diy text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#231912]/90 text-amber-200 hover:bg-[#231912]">
+                  ✂️ Cách làm
+                </button>
+              </div>
             </div>
             <div class="flap-scene aspect-[4/3] w-full ${isOpen ? 'is-open' : ''}" data-craft-toggle="${photo.id}">
               <!-- Bản lề washi tape bên trái -->
@@ -1358,9 +1490,12 @@
               <span class="craft-badge inline-flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-700 text-amber-50 shadow-sm">
                 👆 ${isOpen ? 'Đẩy vào' : 'Kéo lên ↑'}
               </span>
-              <button type="button" data-diy-type="pull-tab" data-diy-w="${photo.wMm}" data-diy-h="${photo.hMm}" data-diy-title="${escapeHtml(photo.title)}" class="btn-diy text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#231912]/90 text-amber-200 hover:bg-[#231912]">
-                ✂️ Cách làm
-              </button>
+              <div class="flex items-center gap-1">
+                ${swapBtn}
+                <button type="button" data-diy-type="pull-tab" data-diy-w="${photo.wMm}" data-diy-h="${photo.hMm}" data-diy-title="${escapeHtml(photo.title)}" class="btn-diy text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#231912]/90 text-amber-200 hover:bg-[#231912]">
+                  ✂️ Cách làm
+                </button>
+              </div>
             </div>
             <div class="pocket-wrapper aspect-[4/3] w-full ${isOpen ? 'is-pulled' : ''}" data-craft-toggle="${photo.id}">
               <!-- Thẻ ghi chú kéo trượt bên trong -->
@@ -1385,7 +1520,8 @@
 
       // Ảnh dán bình thường bằng washi tape
       return `
-        <div class="relative pt-1.5">
+        <div class="relative pt-0.5">
+          <div class="flex justify-end mb-0.5">${swapBtn}</div>
           <div class="relative aspect-[4/3] w-full bg-[#fffdf8] p-1 rounded shadow-md transform rotate-[0.7deg]">
             <div class="washi ${photo.washi || 'washi-ochre'}" style="top:-7px; left:50%; transform:translateX(-50%) rotate(-3deg); width:54px; height:12px;"></div>
             <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.title)}" class="w-full h-full object-cover rounded-[2px]" />
@@ -1454,12 +1590,16 @@
           </p>
         </div>`;
 
+      const slideRef = ch.sourceSlides ? ` • Nguồn: ${escapeHtml(ch.sourceSlides)}` : '';
       const footerBar = (layoutTag) => `
         <div class="pt-1">
           <div class="ruler-strip mb-0.5 opacity-60"></div>
-          <div class="flex justify-between items-center text-[8.5px] font-mono text-[#3b2a1c]/85">
-            <span>A4 KRAFT JOURNAL • ${layoutTag}</span>
-            <span>PAGE ${String(pageNum).padStart(2, '0')}</span>
+          <div class="flex justify-between items-center gap-1 text-[8.5px] font-mono text-[#3b2a1c]/85">
+            <span class="truncate">A4 KRAFT • ${layoutTag}${slideRef}</span>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" data-edit-ch="${escapeHtml(ch.id)}" class="btn-edit-ch-inline font-sans text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#231912]/85 text-amber-200 hover:bg-[#231912]">✏️ Sửa</button>
+              <span>P.${String(pageNum).padStart(2, '0')}</span>
+            </div>
           </div>
         </div>`;
 
@@ -1482,7 +1622,7 @@
             <!-- Upper Row: Photo 1 (7 cols) + Vertical Field Specs & Callout (5 cols) -->
             <div class="grid grid-cols-12 gap-2.5 my-1.5 items-stretch">
               <div class="col-span-7 flex flex-col justify-center">
-                ${firstPhoto ? renderPhotoBlock(firstPhoto) : ''}
+                ${firstPhoto ? renderPhotoBlock(firstPhoto, ch.id) : ''}
               </div>
               <div class="col-span-5 flex flex-col justify-between gap-1.5">
                 <div class="kraft-ink-box p-2 flex-1 flex flex-col justify-between text-[11px] hand-font">
@@ -1514,7 +1654,7 @@
                 <div class="hand-font text-[10.5px] font-bold text-[#231912] mt-0.5"><span class="ink-wavy">${escapeHtml(ch.sketchCaption || 'Plan & Elevation')}</span></div>
               </div>
               <div class="col-span-6">
-                ${secondPhoto ? renderPhotoBlock(secondPhoto) : ''}
+                ${secondPhoto ? renderPhotoBlock(secondPhoto, ch.id) : ''}
               </div>
             </div>
 
@@ -1538,8 +1678,8 @@
 
             <!-- Top Twin-Photo Gallery Row (Side by Side!) -->
             <div class="grid grid-cols-12 gap-2.5 items-start my-1">
-              <div class="col-span-6">${firstPhoto ? renderPhotoBlock(firstPhoto) : ''}</div>
-              <div class="col-span-6">${secondPhoto ? renderPhotoBlock(secondPhoto) : ''}</div>
+              <div class="col-span-6">${firstPhoto ? renderPhotoBlock(firstPhoto, ch.id) : ''}</div>
+              <div class="col-span-6">${secondPhoto ? renderPhotoBlock(secondPhoto, ch.id) : ''}</div>
             </div>
 
             <!-- Full-Width Curved Callout Strip connecting Photos to Notes -->
@@ -1598,14 +1738,14 @@
                 </ul>
               </div>
               <div class="col-span-7 flex flex-col justify-center">
-                ${firstPhoto ? renderPhotoBlock(firstPhoto) : ''}
+                ${firstPhoto ? renderPhotoBlock(firstPhoto, ch.id) : ''}
               </div>
             </div>
 
             <!-- Row 2 (Zag): Photo 2 Left (6 cols) + Sketch & Bullet 3 Right (6 cols) -->
             <div class="grid grid-cols-12 gap-2.5 my-1 flex-1 items-stretch">
               <div class="col-span-6 flex flex-col justify-center">
-                ${secondPhoto ? renderPhotoBlock(secondPhoto) : ''}
+                ${secondPhoto ? renderPhotoBlock(secondPhoto, ch.id) : ''}
               </div>
               <div class="col-span-6 flex flex-col justify-between gap-1.5">
                 <div class="kraft-dashed-box p-1.5 text-center">
@@ -1663,7 +1803,7 @@
               </div>
             </div>
             <div class="col-span-7 flex flex-col justify-between gap-1.5">
-              ${firstPhoto ? renderPhotoBlock(firstPhoto) : ''}
+              ${firstPhoto ? renderPhotoBlock(firstPhoto, ch.id) : ''}
               <div class="kraft-callout-banner px-2 py-1 hand-font text-[11px] font-bold text-[#6e2e14] leading-tight">
                 ↳ ${escapeHtml(ch.calloutNote || '')}
               </div>
@@ -1679,7 +1819,7 @@
               </ul>
             </div>
             <div class="col-span-5 flex flex-col justify-center">
-              ${secondPhoto ? renderPhotoBlock(secondPhoto) : ''}
+              ${secondPhoto ? renderPhotoBlock(secondPhoto, ch.id) : ''}
             </div>
           </div>
 
@@ -1780,6 +1920,20 @@
             btn.getAttribute('data-diy-h'),
             btn.getAttribute('data-diy-title')
           );
+        });
+      });
+
+      stage.querySelectorAll('.btn-swap-photo').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openPhotoPickerModal(btn.getAttribute('data-swap-ch'), btn.getAttribute('data-swap-photo'));
+        });
+      });
+
+      stage.querySelectorAll('.btn-edit-ch-inline').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openChapterEditModal(btn.getAttribute('data-edit-ch'));
         });
       });
 
@@ -2017,8 +2171,8 @@
       for (let p = 1; p <= maxPagesToRead; p++) {
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
-        const strings = content.items.map(it => it.str).join(' ');
-        fullText += strings + '\n';
+        const strings = content.items.map(it => it.str).join(' ').trim();
+        if (strings) fullText += `[SLIDE ${p}] ` + strings + '\n';
       }
       return { text: fullText.trim(), pageCount: pdf.numPages };
     }
@@ -2040,7 +2194,8 @@
             id: 'f-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
             name: cleanName,
             text,
-            pageCount
+            pageCount,
+            rawFile: file
           });
         } catch (err) {
           state.queuedFiles.push({
@@ -2055,24 +2210,96 @@
       showToast(`Đã thêm ${files.length} file PDF! Bấm nút Tạo Booklet khi sẵn sàng.`);
     }
 
-    // ==================== TỰ ĐỘNG TÌM ẢNH MÀU WIKIMEDIA COMMONS ====================
-    async function fetchWikimediaPhoto(query, fallbackUrl) {
-      try {
-        const url =
-          'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=5' +
-          '&gsrsearch=' + encodeURIComponent(query + ' architecture') +
-          '&prop=imageinfo&iiprop=url|mime&iiurlwidth=900&format=json&origin=*';
-        const res = await fetch(url);
-        if (!res.ok) return fallbackUrl;
-        const data = await res.json();
-        const pages = data && data.query && data.query.pages ? Object.values(data.query.pages) : [];
-        for (const p of pages) {
-          const info = p.imageinfo && p.imageinfo[0];
-          if (info && info.mime && (info.mime === 'image/jpeg' || info.mime === 'image/png')) {
-            return info.thumburl || info.url;
+    // ==================== TỰ ĐỘNG DÒ MODEL GEMINI HOẠT ĐỘNG ====================
+    async function discoverWorkingModels(apiKey) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+      if (!res.ok) {
+        let msg = `HTTP ${res.status}`;
+        try {
+          const j = await res.json();
+          if (j?.error?.message) msg = j.error.message;
+        } catch (e) {}
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      const models = (data.models || [])
+        .filter(m =>
+          Array.isArray(m.supportedGenerationMethods) &&
+          m.supportedGenerationMethods.includes('generateContent') &&
+          /^models\/gemini-/i.test(m.name) &&
+          !/tts|image|audio|embedding|aqa|vision-only|robotics/i.test(m.name)
+        )
+        .map(m => m.name.replace(/^models\//, ''));
+
+      // Ưu tiên các bản flash mới nhất
+      models.sort((a, b) => {
+        const score = (id) => {
+          let sc = 0;
+          if (/flash/i.test(id)) sc += 50;
+          if (/lite/i.test(id)) sc -= 5;
+          if (/exp|preview/i.test(id)) sc -= 8;
+          const ver = id.match(/gemini-(\d+(?:\.\d+)?)/i);
+          if (ver) sc += parseFloat(ver[1]) * 10;
+          return sc;
+        };
+        return score(b) - score(a);
+      });
+      return models;
+    }
+
+    function populateModelDropdown(models, selectedModel) {
+      const sel = document.getElementById('sel-api-model');
+      if (!models || !models.length) return;
+      sel.innerHTML = models.slice(0, 12).map((m, idx) =>
+        `<option value="${escapeHtml(m)}" ${m === selectedModel ? 'selected' : ''}>${escapeHtml(m)}${idx === 0 ? ' (Khuyên dùng — Tự động chọn)' : ''}</option>`
+      ).join('');
+      if (selectedModel && models.includes(selectedModel)) {
+        sel.value = selectedModel;
+      } else {
+        sel.value = models[0];
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const res = String(reader.result || '');
+          const idx = res.indexOf(',');
+          resolve(idx >= 0 ? res.slice(idx + 1) : res);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ==================== TỰ ĐỘNG TÌM ẢNH MÀU WIKIMEDIA COMMONS (CHỐNG TRÙNG LẶP) ====================
+    async function fetchWikimediaPhoto(query, usedUrls, fallbackUrl) {
+      const queries = [query, `${query} architecture`, `${query} building`];
+      for (const q of queries) {
+        if (!q || !q.trim()) continue;
+        try {
+          const url =
+            'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=10' +
+            '&gsrsearch=' + encodeURIComponent(q.trim()) +
+            '&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=900&format=json&origin=*';
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const pages = data && data.query && data.query.pages ? Object.values(data.query.pages) : [];
+          for (const p of pages) {
+            const info = p.imageinfo && p.imageinfo[0];
+            if (!info) continue;
+            const okMime = info.mime === 'image/jpeg' || info.mime === 'image/png';
+            const okSize = !info.width || info.width >= 350;
+            const chosen = info.thumburl || info.url;
+            if (okMime && okSize && chosen && !usedUrls.has(chosen)) {
+              usedUrls.add(chosen);
+              return chosen;
+            }
           }
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
       return fallbackUrl;
     }
 
@@ -2081,10 +2308,12 @@
       const prompt = `You are designing one full-page A4 Kraft Field-Journal booklet page for a non-architecture university student studying "History of Architecture & Human Settlements".
 Summarize this lecture chapter in clear, concise ENGLISH suitable for neat handwriting directly on kraft paper.
 IMPORTANT: Wrap 1 key architectural term per bullet with ==double equals== (for highlighter) and 1 key concept with __double underscores__ (for ink underline).
+Provide 2 SPECIFIC, DIFFERENT real historic buildings or settlements mentioned in this exact lecture for Wikimedia Commons photo search!
 Return ONLY valid JSON (no markdown fences) matching this exact schema:
 {
   "title": "SHORT UPPERCASE CHAPTER TITLE (3-6 words)",
   "era": "Historical era or dates (e.g. c. 1140 - 1500 CE)",
+  "sourceSlides": "Exact slide numbers used, e.g. Slides 2, 5, 9",
   "sketchType": "one of: ziggurat, column, pediment, arch, floorplan",
   "sketchCaption": "2-4 word label for the simple plan & massing sketch",
   "calloutNote": "1 short lively field-journal arrow annotation (max 14 words)",
@@ -2097,40 +2326,66 @@ Return ONLY valid JSON (no markdown fences) matching this exact schema:
   "keyTakeaway": "1 short memorable takeaway sentence with ==one highlighted term== (max 18 words)",
   "photos": [
     {
-      "title": "Specific Historic Building or Settlement Name",
-      "searchQuery": "Exact Wikimedia Commons search term for a real color photograph",
-      "craftType": "lift-flap or pull-tab",
+      "title": "Specific Historic Building or Settlement Name #1",
+      "searchQuery": "Exact English name of Building #1 for Wikimedia Commons photo search",
+      "craftType": "${chapterNum % 2 === 1 ? 'lift-flap' : 'pull-tab'}",
       "hiddenTitle": "Short title for hidden flip/pull note",
       "hiddenText": "2 short sentences of interesting architectural facts hidden under the flap or inside the pull-tab pocket."
     },
     {
-      "title": "Second Historic Building or Architectural Detail",
-      "searchQuery": "Exact Wikimedia Commons search term for a real color photograph",
-      "craftType": "${craftCount >= 2 ? 'pull-tab' : 'normal'}",
+      "title": "Different Specific Historic Building or Detail #2",
+      "searchQuery": "Exact English name of Building #2 for Wikimedia Commons photo search",
+      "craftType": "${craftCount >= 2 ? (chapterNum % 2 === 1 ? 'pull-tab' : 'lift-flap') : 'normal'}",
       "caption": "1 short caption if normal",
       "hiddenTitle": "Short title if interactive",
       "hiddenText": "2 short sentences if interactive"
     }
   ]
-}
+}`;
 
-Chapter #${chapterNum} Title: ${fileObj.name}
-Lecture Slide Text:
-${fileObj.text.slice(0, 12000)}`;
+      const parts = [{ text: prompt + `
 
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(state.apiModel)}:generateContent?key=${encodeURIComponent(state.apiKey)}`;
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: 'application/json', temperature: 0.4 }
-        })
-      });
+Chapter #${chapterNum} File Name: ${fileObj.name}` }];
+
+      // Nếu slide PDF có đủ chữ thì gửi chữ; nếu PDF scan/nhiều hình (< 250 ký tự) và < 8MB thì gửi thẳng file PDF cho Gemini đọc trực tiếp!
+      if (fileObj.text && fileObj.text.trim().length >= 250) {
+        parts.push({ text: `Lecture Slide Text:
+${fileObj.text.slice(0, 14000)}` });
+      } else if (fileObj.rawFile && fileObj.rawFile.size < 8 * 1024 * 1024) {
+        const b64 = await fileToBase64(fileObj.rawFile);
+        parts.push({ inline_data: { mime_type: 'application/pdf', data: b64 } });
+      } else {
+        parts.push({ text: `Lecture Slide Text:
+${fileObj.text || fileObj.name}` });
+      }
+
+      const callOnce = async (modelId) => {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(state.apiKey)}`;
+        return fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: { responseMimeType: 'application/json', temperature: 0.4 }
+          })
+        });
+      };
+
+      let res = await callOnce(state.apiModel);
+
+      // Nếu gặp giới hạn tốc độ 429 (gói miễn phí), chờ 5 giây rồi tự thử lại 1 lần
+      if (res.status === 429) {
+        await new Promise(r => setTimeout(r, 5000));
+        res = await callOnce(state.apiModel);
+      }
 
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Lỗi Gemini API (${res.status}): ${errText.slice(0, 120)}`);
+        let errDetail = `HTTP ${res.status}`;
+        try {
+          const j = await res.json();
+          if (j?.error?.message) errDetail = `${res.status}: ${j.error.message}`;
+        } catch (e) {}
+        throw new Error(errDetail);
       }
       const data = await res.json();
       const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -2139,7 +2394,7 @@ ${fileObj.text.slice(0, 12000)}`;
     }
 
     function summarizeOffline(fileObj, chapterNum, craftCount) {
-      const lines = fileObj.text
+      const lines = (fileObj.text || '')
         .split(/\n|(?<=[.!?])\s+/)
         .map(s => s.replace(/\s+/g, ' ').trim())
         .filter(s => s.length > 24 && s.length < 180);
@@ -2199,10 +2454,38 @@ ${fileObj.text.slice(0, 12000)}`;
       btn.classList.add('opacity-60');
       wrap.classList.remove('hidden');
 
+      // Tự động kiểm tra & chọn model hoạt động trước khi chạy 21 file (tránh lỗi 404 dây chuyền!)
+      if (state.apiKey) {
+        txt.textContent = 'Đang kiểm tra Gemini API key và tự chọn model hoạt động...';
+        bar.style.width = '4%';
+        pct.textContent = '4%';
+        try {
+          const models = await discoverWorkingModels(state.apiKey);
+          if (!models.length) {
+            throw new Error('Không tìm thấy model Gemini nào hỗ trợ tạo nội dung cho key này.');
+          }
+          if (!models.includes(state.apiModel)) {
+            state.apiModel = models[0];
+            populateModelDropdown(models, state.apiModel);
+            try { localStorage.setItem('kraftfold_gemini_model', state.apiModel); } catch (e) {}
+            showToast(`Đã tự động chuyển sang model hoạt động: ${state.apiModel}`, 3200);
+          }
+        } catch (err) {
+          btn.disabled = false;
+          btn.classList.remove('opacity-60');
+          wrap.classList.add('hidden');
+          showToast(`API key chưa hợp lệ (${err.message}). Hãy mở "Cài đặt Gemini API" để kiểm tra lại nhé!`, 5500);
+          document.getElementById('btn-open-api').click();
+          return;
+        }
+      }
+
       const washiPool = ['washi-terracotta', 'washi-sage', 'washi-blue', 'washi-ochre'];
       const fallbackPool = [DEMO_IMAGES.ziggurat, DEMO_IMAGES.karnak, DEMO_IMAGES.parthenon, DEMO_IMAGES.aqueduct];
+      const usedPhotoUrls = new Set();
       const newChapters = [];
       let usedGemini = false;
+      let aiErrors = 0;
 
       for (let i = 0; i < state.queuedFiles.length; i++) {
         const f = state.queuedFiles[i];
@@ -2210,7 +2493,7 @@ ${fileObj.text.slice(0, 12000)}`;
         bar.style.width = `${progress}%`;
         pct.textContent = `${progress}%`;
         txt.textContent = state.apiKey
-          ? `Đang dùng Gemini AI tóm tắt Chương ${i + 1}/${state.queuedFiles.length}: ${f.name}...`
+          ? `Đang dùng ${state.apiModel} tóm tắt Chương ${i + 1}/${state.queuedFiles.length}: ${f.name}...`
           : `Đang trích xuất Chương ${i + 1}/${state.queuedFiles.length} (Chế độ nhanh): ${f.name}...`;
 
         let parsed;
@@ -2219,20 +2502,25 @@ ${fileObj.text.slice(0, 12000)}`;
             parsed = await summarizeWithGemini(f, i + 1, craftCount);
             usedGemini = true;
           } catch (err) {
-            showToast(`Chuyển sang trích xuất nhanh ở Ch.${i + 1}: ${err.message}`, 4000);
+            aiErrors++;
+            showToast(`Lỗi AI ở Ch.${i + 1}: ${err.message.slice(0, 90)}`, 4200);
             parsed = summarizeOffline(f, i + 1, craftCount);
+          }
+          // Nghỉ nhẹ 1.2s giữa các chương để tránh vượt giới hạn request/phút của gói miễn phí
+          if (i < state.queuedFiles.length - 1) {
+            await new Promise(r => setTimeout(r, 1200));
           }
         } else {
           parsed = summarizeOffline(f, i + 1, craftCount);
         }
 
-        txt.textContent = `Đang tìm ảnh kiến trúc màu cho Chương ${i + 1}/${state.queuedFiles.length}...`;
+        txt.textContent = `Đang tìm ảnh kiến trúc màu riêng cho Chương ${i + 1}/${state.queuedFiles.length}...`;
         const builtPhotos = [];
         const rawPhotos = (parsed.photos || []).slice(0, 2);
         for (let j = 0; j < rawPhotos.length; j++) {
           const rp = rawPhotos[j];
           const fb = fallbackPool[(i + j) % fallbackPool.length];
-          const imgUrl = await fetchWikimediaPhoto(rp.searchQuery || rp.title || f.name, fb);
+          const imgUrl = await fetchWikimediaPhoto(rp.searchQuery || rp.title || f.name, usedPhotoUrls, fb);
           builtPhotos.push({
             id: `gen-p-${i}-${j}-${Date.now()}`,
             title: rp.title || f.name,
@@ -2253,6 +2541,7 @@ ${fileObj.text.slice(0, 12000)}`;
           layoutVariant: i % 4,
           title: parsed.title || f.name.toUpperCase(),
           era: parsed.era || `Chapter ${i + 1}`,
+          sourceSlides: parsed.sourceSlides || `Slides 1–${f.pageCount || 1}`,
           accentWashi: washiPool[i % washiPool.length],
           sketchType: parsed.sketchType || 'floorplan',
           sketchCaption: parsed.sketchCaption || 'Plan & Massing',
@@ -2280,9 +2569,9 @@ ${fileObj.text.slice(0, 12000)}`;
         switchTab('booklet');
         showToast(
           usedGemini
-            ? `Đã tạo xong ${newChapters.length} chương bằng AI + Trang In Cắt 1:1!`
-            : `Đã tạo xong ${newChapters.length} chương (nhập Gemini API key miễn phí để AI tóm tắt chi tiết hơn).`,
-          4200
+            ? `Đã tạo xong ${newChapters.length} chương bằng ${state.apiModel}${aiErrors ? ` (${aiErrors} chương phải dùng trích xuất dự phòng)` : ''} + Trang In Cắt 1:1!`
+            : `Đã tạo xong ${newChapters.length} chương (nhập Gemini API key miễn phí để AI tóm tắt chuẩn từng chương).`,
+          4800
         );
       }, 450);
     }
@@ -2492,19 +2781,28 @@ ${fileObj.text.slice(0, 12000)}`;
     });
     document.getElementById('btn-test-api').addEventListener('click', async () => {
       const key = document.getElementById('inp-api-key').value.trim();
-      const model = document.getElementById('sel-api-model').value;
       const resBox = document.getElementById('api-test-result');
-      resBox.classList.remove('hidden', 'bg-emerald-950/70', 'text-emerald-200', 'bg-red-950/70', 'text-red-200');
+      resBox.className = 'text-xs px-3 py-2 rounded-lg bg-[#1b1512] text-amber-200';
       if (!key) {
-        resBox.classList.add('bg-red-950/70', 'text-red-200');
+        resBox.className = 'text-xs px-3 py-2 rounded-lg bg-red-950/70 text-red-200';
         resBox.textContent = 'Vui lòng dán Gemini API key vào ô trên trước.';
         return;
       }
-      resBox.classList.add('bg-[#1b1512]', 'text-amber-200');
-      resBox.textContent = 'Đang kiểm tra kết nối tới Gemini API...';
+      resBox.textContent = 'Đang dò danh sách model Gemini hoạt động với key của bạn...';
       try {
+        const models = await discoverWorkingModels(key);
+        if (!models.length) {
+          resBox.className = 'text-xs px-3 py-2 rounded-lg bg-red-950/70 text-red-200';
+          resBox.textContent = '✕ Key kết nối được nhưng không tìm thấy model Gemini nào hỗ trợ tạo văn bản.';
+          return;
+        }
+        const preferred = document.getElementById('sel-api-model').value;
+        const chosen = models.includes(preferred) ? preferred : models[0];
+        populateModelDropdown(models, chosen);
+
+        resBox.textContent = `Tìm thấy ${models.length} model! Đang test thử ${chosen}...`;
         const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(chosen)}:generateContent?key=${encodeURIComponent(key)}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2512,15 +2810,27 @@ ${fileObj.text.slice(0, 12000)}`;
           }
         );
         if (resp.ok) {
+          state.apiKey = key;
+          state.apiModel = chosen;
+          try {
+            localStorage.setItem('kraftfold_gemini_key', key);
+            localStorage.setItem('kraftfold_gemini_model', chosen);
+          } catch (e) {}
+          updateApiIndicator();
           resBox.className = 'text-xs px-3 py-2 rounded-lg bg-emerald-950/70 text-emerald-200';
-          resBox.textContent = '✓ Kết nối thành công! Sẵn sàng tóm tắt 21 file PDF của bạn.';
+          resBox.textContent = `✓ Kết nối thành công & đã tự lưu! Đang dùng model: ${chosen}`;
         } else {
+          let errMsg = `HTTP ${resp.status}`;
+          try {
+            const j = await resp.json();
+            if (j?.error?.message) errMsg = j.error.message;
+          } catch (e) {}
           resBox.className = 'text-xs px-3 py-2 rounded-lg bg-red-950/70 text-red-200';
-          resBox.textContent = `✕ API báo lỗi ${resp.status}. Hãy kiểm tra lại key hoặc đổi phiên bản Gemini.`;
+          resBox.textContent = `✕ Lỗi ${resp.status}: ${errMsg}`;
         }
       } catch (err) {
         resBox.className = 'text-xs px-3 py-2 rounded-lg bg-red-950/70 text-red-200';
-        resBox.textContent = '✕ Không kết nối được tới Gemini API từ mạng hiện tại.';
+        resBox.textContent = `✕ Không thể xác thực key: ${err.message}`;
       }
     });
 
@@ -2554,6 +2864,226 @@ ${fileObj.text.slice(0, 12000)}`;
       modalManual.classList.add('hidden');
       renderFileQueue();
       showToast(`Đã thêm chương "${title}" vào hàng đợi.`);
+    });
+
+
+    // ==================== MODAL ĐỔI ẢNH (WIKIMEDIA + UPLOAD TỪ SLIDE) ====================
+    let activeSwapTarget = { chId: null, photoId: null };
+    const modalPhoto = document.getElementById('modal-photo');
+
+    function findChapterAndPhoto(chId, photoId) {
+      const ch = state.chapters.find(c => c.id === chId);
+      if (!ch) return { ch: null, photo: null };
+      const photo = (ch.photos || []).find(p => p.id === photoId);
+      return { ch, photo };
+    }
+
+    function getUsedUrlsMap(excludePhotoId) {
+      const map = new Map();
+      state.chapters.forEach(ch => {
+        (ch.photos || []).forEach(p => {
+          if (p.id !== excludePhotoId && p.url) {
+            map.set(p.url, `Ch.${ch.chapterNum}`);
+          }
+        });
+      });
+      return map;
+    }
+
+    async function runWikiPhotoSearch(query) {
+      const statusEl = document.getElementById('photo-search-status');
+      const gridEl = document.getElementById('photo-search-grid');
+      if (!query.trim()) {
+        statusEl.textContent = 'Nhập tên công trình bằng tiếng Anh rồi bấm Tìm ảnh.';
+        return;
+      }
+      statusEl.textContent = `Đang tìm ảnh màu của "${query}" trên Wikimedia Commons...`;
+      gridEl.innerHTML = '';
+      const usedMap = getUsedUrlsMap(activeSwapTarget.photoId);
+      try {
+        const url =
+          'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=12' +
+          '&gsrsearch=' + encodeURIComponent(query.trim()) +
+          '&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=600&format=json&origin=*';
+        const res = await fetch(url);
+        const data = await res.json();
+        const pages = data && data.query && data.query.pages ? Object.values(data.query.pages) : [];
+        const candidates = [];
+        for (const p of pages) {
+          const info = p.imageinfo && p.imageinfo[0];
+          if (!info) continue;
+          const okMime = info.mime === 'image/jpeg' || info.mime === 'image/png';
+          const imgUrl = info.thumburl || info.url;
+          if (okMime && imgUrl) {
+            candidates.push({
+              title: (p.title || '').replace(/^File:/i, '').replace(/\.[^.]+$/, ''),
+              url: imgUrl,
+              usedIn: usedMap.get(imgUrl) || null
+            });
+          }
+          if (candidates.length >= 6) break;
+        }
+        if (!candidates.length) {
+          statusEl.textContent = 'Không tìm thấy ảnh phù hợp. Bạn thử đổi từ khóa tiếng Anh ngắn gọn hơn hoặc tải ảnh chụp trực tiếp từ slide của cô nhé!';
+          return;
+        }
+        statusEl.textContent = `Tìm thấy ${candidates.length} ảnh — bấm vào ảnh bạn ưng nhất để thay ngay vào Booklet:`;
+        gridEl.innerHTML = candidates.map((c, idx) => `
+          <button type="button" data-pick-url="${escapeHtml(c.url)}" class="group relative text-left bg-[#1b1512] border ${c.usedIn ? 'border-amber-600/70' : 'border-amber-900/50'} hover:border-emerald-400 rounded-xl overflow-hidden transition">
+            <img src="${escapeHtml(c.url)}" alt="${escapeHtml(c.title)}" class="w-full aspect-[4/3] object-cover group-hover:scale-105 transition duration-200" />
+            ${c.usedIn ? `<span class="absolute top-1.5 right-1.5 bg-amber-700/95 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Đã dùng ở ${escapeHtml(c.usedIn)}</span>` : ''}
+            <div class="p-1.5 text-[10px] text-amber-100/85 truncate">${escapeHtml(c.title)}</div>
+          </button>
+        `).join('');
+
+        gridEl.querySelectorAll('[data-pick-url]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const { photo } = findChapterAndPhoto(activeSwapTarget.chId, activeSwapTarget.photoId);
+            if (!photo) return;
+            photo.url = btn.getAttribute('data-pick-url');
+            photo.title = document.getElementById('photo-edit-title').value.trim() || photo.title;
+            modalPhoto.classList.add('hidden');
+            renderFlipbook();
+            showToast('Đã đổi ảnh mới! Trang In Cắt 1:1 cũng tự cập nhật đúng kích thước mm.');
+          });
+        });
+      } catch (err) {
+        statusEl.textContent = 'Không kết nối được Wikimedia Commons. Bạn có thể tải ảnh chụp trực tiếp từ slide ở nút màu xanh phía trên!';
+      }
+    }
+
+    function openPhotoPickerModal(chId, photoId) {
+      activeSwapTarget = { chId, photoId };
+      const { photo } = findChapterAndPhoto(chId, photoId);
+      if (!photo) return;
+      document.getElementById('photo-edit-title').value = photo.title || '';
+      document.getElementById('photo-search-query').value = photo.title || '';
+      modalPhoto.classList.remove('hidden');
+      runWikiPhotoSearch(photo.title || '');
+    }
+
+    document.getElementById('btn-close-photo').addEventListener('click', () => modalPhoto.classList.add('hidden'));
+    document.getElementById('btn-cancel-photo').addEventListener('click', () => modalPhoto.classList.add('hidden'));
+    document.getElementById('btn-search-wiki').addEventListener('click', () => {
+      runWikiPhotoSearch(document.getElementById('photo-search-query').value);
+    });
+    document.getElementById('photo-search-query').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runWikiPhotoSearch(e.target.value);
+    });
+    document.getElementById('btn-save-photo-title').addEventListener('click', () => {
+      const { photo } = findChapterAndPhoto(activeSwapTarget.chId, activeSwapTarget.photoId);
+      if (photo) {
+        photo.title = document.getElementById('photo-edit-title').value.trim() || photo.title;
+        renderFlipbook();
+        showToast('Đã cập nhật tên công trình!');
+      }
+      modalPhoto.classList.add('hidden');
+    });
+    document.getElementById('photo-local-upload').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const { photo } = findChapterAndPhoto(activeSwapTarget.chId, activeSwapTarget.photoId);
+        if (!photo) return;
+        photo.url = reader.result;
+        photo.title = document.getElementById('photo-edit-title').value.trim() || photo.title;
+        modalPhoto.classList.add('hidden');
+        renderFlipbook();
+        showToast('Đã thay bằng ảnh chụp từ slide của bạn (giữ nguyên tỉ lệ mm 1:1)!');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    // ==================== MODAL SỬA NHANH NỘI DUNG CHƯƠNG ====================
+    let activeEditChId = null;
+    const modalEditCh = document.getElementById('modal-edit-ch');
+
+    function openChapterEditModal(chId) {
+      const ch = state.chapters.find(c => c.id === chId);
+      if (!ch) return;
+      activeEditChId = chId;
+      document.getElementById('edit-ch-heading').textContent = `✏️ Sửa nhanh Chương ${ch.chapterNum}`;
+      document.getElementById('ech-title').value = ch.title || '';
+      document.getElementById('ech-era').value = ch.era || '';
+      document.getElementById('ech-slides').value = ch.sourceSlides || '';
+      document.getElementById('ech-callout').value = ch.calloutNote || '';
+      document.getElementById('ech-bullets').value = (ch.summaryBullets || []).join('\n');
+      const sp = ch.quickSpecs || { materials: '', structure: '', urbanForm: '' };
+      document.getElementById('ech-mat').value = sp.materials || '';
+      document.getElementById('ech-str').value = sp.structure || '';
+      document.getElementById('ech-urb').value = sp.urbanForm || '';
+      document.getElementById('ech-takeaway').value = ch.keyTakeaway || '';
+
+      const pBox = document.getElementById('ech-photos-box');
+      pBox.innerHTML = `<div class="text-xs font-bold text-amber-200">Cấu hình hiệu ứng tương tác cho từng ảnh:</div>` +
+        (ch.photos || []).map((p, idx) => `
+          <div class="bg-[#1b1512] border border-amber-900/50 rounded-xl p-2.5 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-amber-100 text-xs">Ảnh ${idx + 1}: ${escapeHtml(p.title)}</span>
+              <select data-ech-craft="${idx}" class="bg-[#28201b] border border-amber-800/60 rounded px-2 py-1 text-xs text-amber-50">
+                <option value="lift-flap" ${p.craftType === 'lift-flap' ? 'selected' : ''}>Lật mở (Lift-the-Flap)</option>
+                <option value="pull-tab" ${p.craftType === 'pull-tab' ? 'selected' : ''}>Túi kéo (Pull-Tab)</option>
+                <option value="normal" ${p.craftType === 'normal' ? 'selected' : ''}>Dán thường</option>
+              </select>
+            </div>
+            <input type="text" data-ech-hidden-title="${idx}" value="${escapeHtml(p.hiddenTitle || '')}" placeholder="Tiêu đề phần ghi chú ẩn (nếu lật/kéo)" class="w-full bg-[#241c18] border border-amber-900/40 rounded px-2 py-1 text-xs text-amber-50" />
+            <textarea rows="2" data-ech-hidden-text="${idx}" placeholder="Nội dung ẩn bên dưới ảnh (hoặc chú thích nếu dán thường)" class="w-full bg-[#241c18] border border-amber-900/40 rounded px-2 py-1 text-xs text-amber-50">${escapeHtml(p.craftType === 'normal' ? (p.caption || p.hiddenText || '') : (p.hiddenText || ''))}</textarea>
+          </div>
+        `).join('');
+
+      modalEditCh.classList.remove('hidden');
+    }
+
+    document.getElementById('btn-edit-chapter-bar').addEventListener('click', () => {
+      const pages = getAllPages();
+      const step = (state.singleMode || window.innerWidth < 1024) ? 1 : 2;
+      for (let k = 0; k < step; k++) {
+        const p = pages[state.spreadIndex + k];
+        if (p && p.type === 'chapter' && p.chapter) {
+          openChapterEditModal(p.chapter.id);
+          return;
+        }
+      }
+      showToast('Hãy lật sang trang chương (từ Trang 3 trở đi) để sửa nội dung chương!');
+    });
+
+    document.getElementById('btn-close-edit-ch').addEventListener('click', () => modalEditCh.classList.add('hidden'));
+    document.getElementById('btn-cancel-edit-ch').addEventListener('click', () => modalEditCh.classList.add('hidden'));
+    document.getElementById('btn-save-edit-ch').addEventListener('click', () => {
+      const ch = state.chapters.find(c => c.id === activeEditChId);
+      if (!ch) return;
+      ch.title = document.getElementById('ech-title').value.trim() || ch.title;
+      ch.era = document.getElementById('ech-era').value.trim();
+      ch.sourceSlides = document.getElementById('ech-slides').value.trim();
+      ch.calloutNote = document.getElementById('ech-callout').value.trim();
+      ch.summaryBullets = document.getElementById('ech-bullets').value
+        .split('\n')
+        .map(l => l.trim())
+        .filter(Boolean);
+      ch.quickSpecs = {
+        materials: document.getElementById('ech-mat').value.trim(),
+        structure: document.getElementById('ech-str').value.trim(),
+        urbanForm: document.getElementById('ech-urb').value.trim()
+      };
+      ch.keyTakeaway = document.getElementById('ech-takeaway').value.trim();
+
+      (ch.photos || []).forEach((p, idx) => {
+        const sel = document.querySelector(`[data-ech-craft="${idx}"]`);
+        const ht = document.querySelector(`[data-ech-hidden-title="${idx}"]`);
+        const hb = document.querySelector(`[data-ech-hidden-text="${idx}"]`);
+        if (sel) p.craftType = sel.value;
+        if (ht) p.hiddenTitle = ht.value.trim();
+        if (hb) {
+          if (p.craftType === 'normal') p.caption = hb.value.trim();
+          else p.hiddenText = hb.value.trim();
+        }
+      });
+
+      modalEditCh.classList.add('hidden');
+      renderFlipbook();
+      showToast(`Đã lưu chỉnh sửa cho Chương ${ch.chapterNum}!`);
     });
 
     // ==================== KHỞI TẠO ====================
